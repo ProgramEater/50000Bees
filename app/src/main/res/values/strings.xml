@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">50 Thousand Bees</string>
+    <string name="sandbox_button">sandbox</string>
+    <string name="exit_button">exit</string>
+</resources>
