@@ -8,6 +8,7 @@ import android.graphics.Rect;
 
 public class Sprite {
     Context context;
+    SpriteGroup<Sprite> parent_group;
 
     // frames are listed in rows from left to right, then continue on next row
     protected Bitmap frames_image;
@@ -22,8 +23,9 @@ public class Sprite {
     protected Rect rect;
 
 
-    public Sprite(Context context, Bitmap frames_image, int frame_count_columns, int frame_count_rows, int frame_count,
+    public Sprite(SpriteGroup<Sprite> parent_group, Context context, Bitmap frames_image, int frame_count_columns, int frame_count_rows, int frame_count,
            Rect rect) {
+        this.parent_group = parent_group;
         this.context = context;
 
         this.rect = rect;
@@ -68,6 +70,8 @@ public class Sprite {
         current_frame %= animation_list.length;
     }
 
+    public void update() {}
+
     public void change_size(int dst_Width, int dst_Height) {
         int[] new_rect_params = new int[] {
                 rect.centerX() - dst_Width / 2,
@@ -84,8 +88,12 @@ public class Sprite {
         fill_animation_list(rect, frame_count_columns, frame_count_rows, frame_count);
     }
 
-    public boolean collides(Sprite sprite) {
+    public boolean collidesSprite(Sprite sprite) {
         return Rect.intersects(this.getRect(), sprite.getRect());
+    }
+
+    public boolean collidesRect(Rect rect) {
+        return Rect.intersects(this.getRect(), rect);
     }
 
     public Bitmap getFrames_image() {
