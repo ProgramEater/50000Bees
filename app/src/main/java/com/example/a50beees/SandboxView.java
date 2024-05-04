@@ -39,10 +39,11 @@ public class SandboxView extends View {
 
     Timer timer;
     double scaleFactor = 1.0;
-    boolean scaleInProgress = false;
-    double canvas_translate_x = 0, canvas_translate_y = 0;
-    // float current_fx = 0, current_fy = 0;
-    float lastTouchX = 0, lastTouchY = 0;
+    double canvasX = 0, canvasY = 0;
+    double focalX = 0, focalY = 0;
+
+    double lastTouchX = 0, lastTouchY = 0;
+
     Paint paint = new Paint();
 
     SpriteGroup<Sprite> entities = new SpriteGroup<>();
@@ -91,9 +92,8 @@ public class SandboxView extends View {
     protected void onDraw(Canvas canvas) {
         canvas.save();
 
-        // canvas.scale((float) scaleFactor, (float) scaleFactor, current_fx, current_fy);
-        canvas.scale((float) scaleFactor, (float) scaleFactor, getWidth() / 2.f, getHeight() / 2.f);
-        canvas.translate((float) (canvas_translate_x), (float) (canvas_translate_y));
+        canvas.scale((float) scaleFactor, (float) scaleFactor);
+        canvas.translate((float) (canvasX), (float) (canvasY));
 
         super.onDraw(canvas);
         entities.drawAll(canvas);
@@ -115,8 +115,8 @@ public class SandboxView extends View {
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_MOVE: {
-                canvas_translate_x += (-lastTouchX + event.getX()) / scaleFactor * .4;
-                canvas_translate_y += (-lastTouchY + event.getY()) / scaleFactor * .4;
+                canvasX += (-lastTouchX + event.getX()) / scaleFactor * .6;
+                canvasY += (-lastTouchY + event.getY()) / scaleFactor * .6;
 
                 lastTouchX = event.getX();
                 lastTouchY = event.getY();
@@ -128,10 +128,10 @@ public class SandboxView extends View {
             case MotionEvent.ACTION_DOWN: {
                 performClick();
 
-                double canvasEventX = ((event.getX()) / scaleFactor - canvas_translate_x);
-                double canvasEventY = ((event.getY()) / scaleFactor - canvas_translate_y);
+                double canvasEventX = ((event.getX()) / scaleFactor - canvasX);
+                double canvasEventY = ((event.getY()) / scaleFactor - canvasY);
                 Log.i("1", String.format("%s %s - %s %s", canvasEventX, canvasEventY, event.getX(), event.getY()));
-                Log.i("1", String.format("%s %s canvasTranslate", canvas_translate_x, canvas_translate_y));
+                Log.i("1", String.format("%s %s canvasTranslate", canvasX, canvasY));
 
                 // get a pointer
                 lastTouchX = event.getX();
@@ -179,28 +179,22 @@ public class SandboxView extends View {
             extends ScaleGestureDetector.SimpleOnScaleGestureListener {
         @Override
         public boolean onScaleBegin(@NonNull ScaleGestureDetector detector) {
-            // canvas_translate_x = current_fx * (1 - scaleFactor) - detector.getFocusX() * (1 - scaleFactor) + canvas_translate_x;
-            // canvas_translate_y = current_fy * (1 - scaleFactor) - detector.getFocusY() * (1 - scaleFactor) + canvas_translate_y;
-            // current_fx = detector.getFocusX();
-            // current_fy = detector.getFocusY();
-            scaleInProgress = true;
+            focalX = detector.getFocusX();
+            focalY = detector.getFocusY();
+
             return super.onScaleBegin(detector);
         }
 
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
+            canvasX += focalX * (1 - detector.getScaleFactor());
+            canvasY += focalY * (1 - detector.getScaleFactor());
 
             scaleFactor *= detector.getScaleFactor();
             scaleFactor = Math.max(0.01f, Math.min(50.0f, scaleFactor));
 
             invalidate();
             return true;
-        }
-
-        @Override
-        public void onScaleEnd(@NonNull ScaleGestureDetector detector) {
-            scaleInProgress = true;
-            super.onScaleEnd(detector);
         }
     }
 
