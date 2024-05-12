@@ -1,13 +1,11 @@
 package com.example.a50beees;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
 public class Sprite {
-    Context context;
     SpriteGroup<Sprite> parent_group;
 
     // frames are listed in rows from left to right, then continue on next row
@@ -18,15 +16,15 @@ public class Sprite {
     // -------- animation vars -------------
     // contains number of Rects for cropping *frames_image on frames
     protected Rect[] animation_list;
-    protected int current_frame = 0;
+    protected double current_frame = 0;
+    protected double animation_speed = 1;
 
     protected Rect rect;
 
 
-    public Sprite(SpriteGroup<Sprite> parent_group, Context context, Bitmap frames_image, int frame_count_columns, int frame_count_rows, int frame_count,
+    public Sprite(SpriteGroup<Sprite> parent_group, Bitmap frames_image, int frame_count_columns, int frame_count_rows, int frame_count,
            Rect rect) {
         this.parent_group = parent_group;
-        this.context = context;
 
         this.rect = rect;
 
@@ -65,7 +63,7 @@ public class Sprite {
     }
 
     public void draw(Canvas canvas) {
-        canvas.drawBitmap(frames_image, animation_list[current_frame], rect, paint);
+        canvas.drawBitmap(frames_image, animation_list[(int) current_frame], rect, paint);
         current_frame++;
         current_frame %= animation_list.length;
     }
@@ -105,7 +103,11 @@ public class Sprite {
     }
 
     public int get_distance_to(Sprite sprite) {
-        return (int) Math.sqrt(Math.pow((double) this.rect.centerX(), 2) +
-                               Math.pow((double) sprite.rect.centerX(), 2));
+        return (int) Math.sqrt(Math.pow(this.rect.centerX(), 2) +
+                               Math.pow(sprite.rect.centerX(), 2));
+    }
+
+    protected void setAnimation_speed(double animation_speed) {
+        this.animation_speed = animation_speed;
     }
 }

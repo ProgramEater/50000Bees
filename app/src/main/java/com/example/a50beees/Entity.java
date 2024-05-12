@@ -1,14 +1,13 @@
 package com.example.a50beees;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Rect;
+import android.util.Log;
 
 import java.util.ArrayList;
-
-import kotlin.jvm.Throws;
 
 public abstract class Entity extends Sprite {
     protected String type;
@@ -36,24 +35,26 @@ public abstract class Entity extends Sprite {
     // v_y = cur_speed * sin(angle)
     protected double direction_angle = Math.random() * 2 * Math.PI,
             angle_speed = 0,
+            desired_angle = 0,
+            desired_angle_speed = 0,
             ANGLE_ACCELERATION;
 
     // defines a "radius of rotation"
     // bigger the speed easier it is to turn
     // smaller radius means easier rotation
     // so the max rotation angle (angle_speed) is: arcsin(v/2r)
-    private int rotationRadius = 1;
+    protected int rotationRadius = 1;
     // an angle speed which is available at any time no matter the speed
-    private double minAvailableAngle = 0;
+    protected double minAvailableAngle = 0;
     protected int current_speed = 0;
 
     // -------- moving logic -----------
     Entity target;
     Entity last_seen_target;
 
-    public Entity(SpriteGroup<Sprite> parent_group, Context context, ArrayList<Rect> effectors, Bitmap frames_image, int frame_count_columns, int frame_count_rows, int frame_count, Rect rect,
+    public Entity(SpriteGroup<Sprite> parent_group, ArrayList<Rect> effectors, Bitmap frames_image, int frame_count_columns, int frame_count_rows, int frame_count, Rect rect,
                   String type) {
-        super(parent_group, context, frames_image, frame_count_columns, frame_count_rows, frame_count, rect);
+        super(parent_group, frames_image, frame_count_columns, frame_count_rows, frame_count, rect);
         this.type = type;
         this.effectors = effectors;
     }
@@ -61,10 +62,11 @@ public abstract class Entity extends Sprite {
     @Override
     public void draw(Canvas canvas) {
         Matrix matrix = new Matrix();
-        matrix.postRotate((float) (-direction_angle / Math.PI * 180));
+        matrix.preRotate((float) (-direction_angle / Math.PI * 180));
+        Log.i("DRAW", String.valueOf(direction_angle));
 
-        Rect crop_rect = animation_list[current_frame];
-        current_frame++;
+        Rect crop_rect = animation_list[(int) current_frame];
+        current_frame += animation_speed;
         current_frame %= animation_list.length;
 
         Bitmap frame = Bitmap.createBitmap(frames_image,
@@ -72,10 +74,19 @@ public abstract class Entity extends Sprite {
                 matrix, false);
         canvas.drawBitmap(frame, rect.left, rect.top, paint);
 
+        paint.setColor(Color.BLUE);
+        canvas.drawLine(rect.centerX(), rect.centerY(), (float) (rect.centerX() + 150 * Math.cos(desired_angle)), (float) (rect.centerY() - 150 * Math.sin(desired_angle)), paint);
+
+        paint.setColor(Color.GREEN);
+        canvas.drawLine(rect.centerX(), rect.centerY(), (float) (rect.centerX() + 150 * Math.cos(direction_angle)), (float) (rect.centerY() - 150 * Math.sin(direction_angle)), paint);
     }
 
     public void update() {
         update_movement_params();
+
+        // normalize angles
+        direction_angle = (direction_angle + 2 * Math.PI) % (2 * Math.PI);
+        desired_angle = (desired_angle + 2 * Math.PI) % (2 * Math.PI);
 
         // move horizontally and check for collisions with effectors
         move_and_handle_collisions();
@@ -84,38 +95,31 @@ public abstract class Entity extends Sprite {
 
     public void update_movement_params() {
         String state = getState();
-        switch (state) {
-            case "idle": {
-                desired_speed = MAX_SPEED / 2;
+    }
 
-                // change angle speed and angle
-                // max max_angle is always PI/2 (max asin = 1)
-                double max_angle = Math.asin(Math.min(1, (float)current_speed / (2 * rotationRadius))) + minAvailableAngle;
+    public void reach_desire() {
+        double max_angle = calculateMaxRotationAngle();
 
-                angle_speed += ((0.5 - Math.random()) - (angle_speed / (2 * max_angle))) * ANGLE_ACCELERATION;
+        // false - "-"; true - "+"
+        boolean direction = (Math.abs(direction_angle - desired_angle) >= Math.PI ? (direction_angle > desired_angle) : (direction_angle < desired_angle));
 
-                // angle speed is basically a delta angle in a time duration
-                angle_speed = max_angle == 0 ? 0 : angle_speed % max_angle;
-                direction_angle += angle_speed;
-
-                // Potentially broken ----------------------------------------------------
-                // if directional angle is less then -2PI (which technically shouldn't be a thing since angle speed is limited to +-PI
-                direction_angle = (direction_angle + Math.PI * 2) % (Math.PI * 2);
-
-
-                double rel_distance_to_desired_speed = ((float) Math.abs(desired_speed - current_speed) / ACCELERATION - 1) *
-                        (desired_speed > current_speed ? 1 : -1);
-
-                // change speed
-                current_speed += (0.5 - Math.random() + rel_distance_to_desired_speed / 10) * ACCELERATION / 2;
-
-                // if cur_speed < 0: cur_speed = 0
-                current_speed = (current_speed + Math.abs(current_speed)) / 2;
-                // if cur_speed > MAX_SPEED: cut off extra speed
-                current_speed %= Math.max(MAX_SPEED, 1);
-            }
-        //TODO MAKE OTHER STATES
+        if (type.equals("insect") || current_speed > ACCELERATION) {
+            angle_speed = Math.min(Math.min(Math.abs(direction_angle - desired_angle), max_angle), ANGLE_ACCELERATION) * (direction ? 1 : -1);
+        } else {
+            angle_speed = Math.min(Math.abs(direction_angle - desired_angle), ANGLE_ACCELERATION / 2) * (direction ? 1 : -1);
         }
+
+        // angle speed is basically a delta angle in a time duration
+        direction_angle += angle_speed;
+
+
+        // GET TO DESIRED SPEED
+        current_speed += Math.min(ACCELERATION * (desired_speed >= current_speed ? 1 : -1), desired_speed - current_speed);
+
+        // if cur_speed < 0: cur_speed = 0
+        current_speed = (current_speed + Math.abs(current_speed)) / 2;
+        // if cur_speed > MAX_SPEED: cut off extra speed
+        current_speed %= Math.max(MAX_SPEED, 1);
     }
 
     public String getState() {
@@ -164,11 +168,17 @@ public abstract class Entity extends Sprite {
     }
 
     public void handleHorizontalCollision() {
+        desired_angle = (3 * Math.PI - desired_angle) % (2 * Math.PI);
         direction_angle = (3 * Math.PI - direction_angle) % (2 * Math.PI);
     }
 
     public void handleVerticalCollision() {
+        desired_angle = 2 * Math.PI - desired_angle;
         direction_angle = 2 * Math.PI - direction_angle;
+    }
+
+    public double calculateMaxRotationAngle() {
+        return Math.asin(Math.min(1, (float)current_speed / (2 * rotationRadius))) + minAvailableAngle;
     }
 
     public void setRotationRadius(int rotation_radius) {

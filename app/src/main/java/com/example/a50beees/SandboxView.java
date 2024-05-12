@@ -2,33 +2,31 @@ package com.example.a50beees;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Matrix;
+
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.os.CountDownTimer;
 import android.util.AttributeSet;
-import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.core.view.MotionEventCompat;
 
 import java.util.ArrayList;
-import java.util.logging.Logger;
 
 public class SandboxView extends View {
     int timerUpdateInterval = 20;
     class Timer extends CountDownTimer {
         boolean running = false;
+        int tick = 0;
         public Timer() {
             super(Integer.MAX_VALUE, timerUpdateInterval);
         }
         @Override
         public void onTick(long millisUntilFinished) {
+            tick++;
             update();
         }
 
@@ -37,12 +35,12 @@ public class SandboxView extends View {
         }
     }
 
-    Timer timer;
+    static Timer timer;
     double scaleFactor = 1.0;
     double canvasX = 0, canvasY = 0;
     double focalX = 0, focalY = 0;
+    double lastTouchX, lastTouchY;
 
-    double lastTouchX = 0, lastTouchY = 0;
 
     Paint paint = new Paint();
 
@@ -69,6 +67,7 @@ public class SandboxView extends View {
         timer = new Timer();
         timer.start();
 
+        mGestureDetector = new GestureDetector(context, new MyGestureDetector());
         mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
     }
 
@@ -76,10 +75,13 @@ public class SandboxView extends View {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
 
-        effectors.add(new Rect(0, 0, 10, getHeight()));
-        effectors.add(new Rect(this.getWidth() - 10, 0, this.getWidth(), this.getHeight()));
-        effectors.add(new Rect(0, 0, this.getWidth(), 10));
-        effectors.add(new Rect(0, this.getHeight() - 10, this.getWidth(), this.getHeight()));
+        int sH = this.getHeight(), sW = this.getWidth();
+        int x1 = -sW, y1 = -sH;
+        int newW = 2 * sW, newH = 4 * sH;
+        effectors.add(new Rect(x1, y1, x1 + newW, y1 + 20));
+        effectors.add(new Rect(x1, y1, x1 + 20, y1 + newH));
+        effectors.add(new Rect(x1 + newW, y1, x1 + newW + 20, y1 + newH + 20));
+        effectors.add(new Rect(x1, y1 + newH, x1 + newW, y1 + newH + 20));
 
     }
 
@@ -87,6 +89,8 @@ public class SandboxView extends View {
         entities.updateAll();
         invalidate();
     }
+
+    public static int get_time() {return timer.tick;}
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -105,72 +109,67 @@ public class SandboxView extends View {
         canvas.restore();
     }
 
-    private int mActivePointerId = MotionEvent.INVALID_POINTER_ID;
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         mScaleDetector.onTouchEvent(event);
 
         if (mScaleDetector.isInProgress()) return false;
 
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_MOVE: {
-                canvasX += (-lastTouchX + event.getX()) / scaleFactor * .6;
-                canvasY += (-lastTouchY + event.getY()) / scaleFactor * .6;
+        return mGestureDetector.onTouchEvent(event);
+    }
 
-                lastTouchX = event.getX();
-                lastTouchY = event.getY();
+    private GestureDetector mGestureDetector;
 
-                invalidate();
-                break;
-            }
+    private class MyGestureDetector extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onDown(MotionEvent event) {
+            lastTouchX = event.getX();
+            lastTouchY = event.getY();
 
-            case MotionEvent.ACTION_DOWN: {
-                performClick();
-
-                double canvasEventX = ((event.getX()) / scaleFactor - canvasX);
-                double canvasEventY = ((event.getY()) / scaleFactor - canvasY);
-                Log.i("1", String.format("%s %s - %s %s", canvasEventX, canvasEventY, event.getX(), event.getY()));
-                Log.i("1", String.format("%s %s canvasTranslate", canvasX, canvasY));
-
-                // get a pointer
-                lastTouchX = event.getX();
-                lastTouchY = event.getY();
-
-                if (mActivePointerId == MotionEvent.INVALID_POINTER_ID) mActivePointerId = event.getPointerId(0);
-
-                // they are drawn on canvas therefore use canvas coords in the list
-                entities.add(new Bee(entities, getContext(), effectors,
-                        new Rect((int) canvasEventX, (int) canvasEventY,
-                                (int) canvasEventX + 50, (int) canvasEventY + 50)));
-
-                break;
-            }
-
-            case MotionEvent.ACTION_UP: {
-                break;
-            }
-
-            case MotionEvent.ACTION_POINTER_UP: {
-
-                final int pointerIndex = event.getActionIndex();
-                final int pointerId = event.getPointerId(pointerIndex);
-
-                if (pointerId == mActivePointerId) {
-                    // This is the active pointer going up. Choose a new
-                    // active pointer and adjust it accordingly.
-
-                    // no idea what that means Im watching top gear
-                    lastTouchX = event.getX();
-                    lastTouchY = event.getY();
-                    mActivePointerId = MotionEvent.INVALID_POINTER_ID;
-                    mActivePointerId = event.getPointerId(0);
-                }
-                break;
-            }
+            // don't return false here or else none of the other
+            // gestures will work
+            return true;
         }
 
-        return true;
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent event) {
+            double canvasEventX = ((event.getX()) / scaleFactor - canvasX);
+            double canvasEventY = ((event.getY()) / scaleFactor - canvasY);
+
+            // they are drawn on canvas therefore use canvas coords in the list
+            entities.add(new Rabbit(entities, effectors,
+                    new Rect((int) canvasEventX, (int) canvasEventY,
+                            (int) canvasEventX + 50, (int) canvasEventY + 50)));
+            return true;
+        }
+
+        @Override
+        public void onLongPress(@NonNull MotionEvent e) {}
+
+        @Override
+        public boolean onDoubleTap(@NonNull MotionEvent e) {
+            onSingleTapConfirmed(e);
+            return onSingleTapConfirmed(e);
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent e1, @NonNull MotionEvent e2,
+                                float distanceX, float distanceY) {
+            canvasX += (-lastTouchX + e2.getX()) / scaleFactor * .6;
+            canvasY += (-lastTouchY + e2.getY()) / scaleFactor * .6;
+
+            lastTouchX = e2.getX();
+            lastTouchY = e2.getY();
+
+            invalidate();
+            return true;
+        }
+
+        @Override
+        public boolean onFling(MotionEvent event1, @NonNull MotionEvent event2,
+                               float velocityX, float velocityY) {
+            return true;
+        }
     }
 
     private ScaleGestureDetector mScaleDetector;
