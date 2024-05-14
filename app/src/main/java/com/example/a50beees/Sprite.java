@@ -6,8 +6,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 
 public class Sprite {
-    SpriteGroup<Sprite> parent_group;
-
     // frames are listed in rows from left to right, then continue on next row
     protected Bitmap frames_image;
     protected int frame_count_columns, frame_count_rows, frame_count;
@@ -22,10 +20,8 @@ public class Sprite {
     protected Rect rect;
 
 
-    public Sprite(SpriteGroup<Sprite> parent_group, Bitmap frames_image, int frame_count_columns, int frame_count_rows, int frame_count,
+    public Sprite(Bitmap frames_image, int frame_count_columns, int frame_count_rows, int frame_count,
            Rect rect) {
-        this.parent_group = parent_group;
-
         this.rect = rect;
 
         this.frames_image = Bitmap.createScaledBitmap(frames_image,
@@ -103,8 +99,34 @@ public class Sprite {
     }
 
     public int get_distance_to(Sprite sprite) {
-        return (int) Math.sqrt(Math.pow(this.rect.centerX(), 2) +
-                               Math.pow(sprite.rect.centerX(), 2));
+        return (int) Math.sqrt(Math.pow(this.rect.centerX() - sprite.rect.centerX(), 2) +
+                               Math.pow(this.rect.centerY() - sprite.rect.centerY(), 2));
+    }
+
+    public double get_angle_to(Sprite sprite) {
+        int distance = get_distance_to(sprite);
+
+        if (distance == 0) return Math.random() * Math.PI * 2;
+
+        return this.rect.centerY() > sprite.rect.centerY() ?
+                    Math.acos((double) (sprite.rect.centerX() - this.rect.centerX()) / distance) :
+                    2 * Math.PI - (Math.acos((double) (sprite.rect.centerX() - this.rect.centerX()) / distance));
+
+    }
+
+    public double get_angle_to_point(int x, int y) {
+        int distance = get_distance_to_point(x, y);
+
+        if (distance == 0) return Math.random() * Math.PI * 2;
+
+        return this.rect.centerY() > y ?
+                Math.acos((double) (x - this.rect.centerX()) / distance) :
+                2 * Math.PI - (Math.acos((double) (x - this.rect.centerX()) / distance));
+    }
+
+    public int get_distance_to_point(int x, int y) {
+        return (int) Math.sqrt(Math.pow(this.rect.centerX() - x, 2) +
+                Math.pow(this.rect.centerY() - y, 2));
     }
 
     protected void setAnimation_speed(double animation_speed) {

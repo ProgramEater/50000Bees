@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.CountDownTimer;
 import android.util.AttributeSet;
+
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -17,9 +18,8 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 
 public class SandboxView extends View {
-    int timerUpdateInterval = 20;
+    static int timerUpdateInterval = 20;
     class Timer extends CountDownTimer {
-        boolean running = false;
         int tick = 0;
         public Timer() {
             super(Integer.MAX_VALUE, timerUpdateInterval);
@@ -36,17 +36,17 @@ public class SandboxView extends View {
     }
 
     static Timer timer;
+    static double time_coefficient = 1;
     double scaleFactor = 1.0;
     double canvasX = 0, canvasY = 0;
     double focalX = 0, focalY = 0;
     double lastTouchX, lastTouchY;
 
-
     Paint paint = new Paint();
 
-    SpriteGroup<Sprite> entities = new SpriteGroup<>();
+    static SpriteGroup<Entity> entities = new SpriteGroup<>();
     // list of platforms/blocks that interact with entities
-    ArrayList<Rect> effectors = new ArrayList<>();
+    static ArrayList<Rect> effectors = new ArrayList<>();
 
     public SandboxView(Context context) {
         super(context);
@@ -78,10 +78,11 @@ public class SandboxView extends View {
         int sH = this.getHeight(), sW = this.getWidth();
         int x1 = -sW, y1 = -sH;
         int newW = 2 * sW, newH = 4 * sH;
-        effectors.add(new Rect(x1, y1, x1 + newW, y1 + 20));
-        effectors.add(new Rect(x1, y1, x1 + 20, y1 + newH));
-        effectors.add(new Rect(x1 + newW, y1, x1 + newW + 20, y1 + newH + 20));
-        effectors.add(new Rect(x1, y1 + newH, x1 + newW, y1 + newH + 20));
+        int pW = 100;
+        effectors.add(new Rect(x1 - pW, y1 - pW, x1 + newW + pW, y1));
+        effectors.add(new Rect(x1 - pW, y1 - pW, x1, y1 + newH + pW));
+        effectors.add(new Rect(x1 + newW, y1 - pW, x1 + newW + pW, y1 + newH + pW));
+        effectors.add(new Rect(x1 - pW, y1 + newH, x1 + newW + pW, y1 + newH + pW));
 
     }
 
@@ -137,9 +138,10 @@ public class SandboxView extends View {
             double canvasEventY = ((event.getY()) / scaleFactor - canvasY);
 
             // they are drawn on canvas therefore use canvas coords in the list
-            entities.add(new Rabbit(entities, effectors,
-                    new Rect((int) canvasEventX, (int) canvasEventY,
-                            (int) canvasEventX + 50, (int) canvasEventY + 50)));
+            for (int i = 0; i < 5; i++) {
+                entities.add(new Bee(new Rect((int) canvasEventX, (int) canvasEventY,
+                        (int) canvasEventX + 50, (int) canvasEventY + 50)));
+            }
             return true;
         }
 
@@ -147,9 +149,19 @@ public class SandboxView extends View {
         public void onLongPress(@NonNull MotionEvent e) {}
 
         @Override
-        public boolean onDoubleTap(@NonNull MotionEvent e) {
-            onSingleTapConfirmed(e);
-            return onSingleTapConfirmed(e);
+        public boolean onDoubleTap(@NonNull MotionEvent event) {
+            // onSingleTapConfirmed(event);
+            // return onSingleTapConfirmed(event);
+            double canvasEventX = ((event.getX()) / scaleFactor - canvasX);
+            double canvasEventY = ((event.getY()) / scaleFactor - canvasY);
+
+            // they are drawn on canvas therefore use canvas coords in the list
+            for (int i = 0; i < 5; i++) {
+                entities.add(new Rabbit(new Rect((int) canvasEventX, (int) canvasEventY,
+                        (int) canvasEventX + 50, (int) canvasEventY + 50)));
+            }
+            return true;
+
         }
 
         @Override

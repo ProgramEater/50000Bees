@@ -1,18 +1,20 @@
 package com.example.a50beees;
 
-import static android.view.MotionEvent.INVALID_POINTER_ID;
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.MotionEvent;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.slider.Slider;
 
 import java.util.TreeMap;
 
 public class SandboxActivity extends AppCompatActivity {
     SandboxView sandbox_view;
+    Slider slider;
 
     static TreeMap<String, Bitmap> bitmaps = new TreeMap<>();
 
@@ -22,6 +24,14 @@ public class SandboxActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sandbox);
 
         fill_bitmaps();
+
+        slider = (Slider) findViewById(R.id.time_slider);
+        slider.addOnChangeListener(new Slider.OnChangeListener() {
+            @Override
+            public void onValueChange(@NonNull Slider slider, float v, boolean b) {
+                SandboxView.time_coefficient = v;
+            }
+        });
 
         sandbox_view = findViewById(R.id.sandbox_view);
     }
