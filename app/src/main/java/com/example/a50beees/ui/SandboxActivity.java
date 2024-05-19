@@ -1,4 +1,4 @@
-package com.example.a50beees;
+package com.example.a50beees.ui;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,6 +8,7 @@ import android.view.MotionEvent;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.a50beees.R;
 import com.google.android.material.slider.Slider;
 
 import java.util.TreeMap;

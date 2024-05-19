@@ -1,8 +1,7 @@
-package com.example.a50beees;
+package com.example.a50beees.ui;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Rect;
 
@@ -108,11 +107,11 @@ public abstract class Entity extends Sprite {
                 matrix, false);
         canvas.drawBitmap(frame, rect.left, rect.top, paint);
 
-        paint.setColor(Color.BLUE);
-        canvas.drawLine(rect.centerX(), rect.centerY(), (float) (rect.centerX() + 150 * Math.cos(desired_angle)), (float) (rect.centerY() - 150 * Math.sin(desired_angle)), paint);
-
-        paint.setColor(Color.GREEN);
-        canvas.drawLine(rect.centerX(), rect.centerY(), (float) (rect.centerX() + 150 * Math.cos(direction_angle)), (float) (rect.centerY() - 150 * Math.sin(direction_angle)), paint);
+        //paint.setColor(Color.BLUE);
+        //canvas.drawLine(rect.centerX(), rect.centerY(), (float) (rect.centerX() + 150 * Math.cos(desired_angle)), (float) (rect.centerY() - 150 * Math.sin(desired_angle)), paint);
+//
+        //paint.setColor(Color.GREEN);
+        //canvas.drawLine(rect.centerX(), rect.centerY(), (float) (rect.centerX() + 150 * Math.cos(direction_angle)), (float) (rect.centerY() - 150 * Math.sin(direction_angle)), paint);
     }
 
     public void update() {

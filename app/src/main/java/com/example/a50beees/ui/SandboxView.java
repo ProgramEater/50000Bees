@@ -1,4 +1,4 @@
-package com.example.a50beees;
+package com.example.a50beees.ui;
 
 import android.content.Context;
 import android.graphics.Canvas;

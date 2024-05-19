@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <com.example.a50beees.SandboxView
+    <com.example.a50beees.ui.SandboxView
         android:id="@+id/sandbox_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
