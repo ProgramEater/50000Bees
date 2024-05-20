@@ -8,6 +8,7 @@ import android.graphics.Rect;
 import android.os.CountDownTimer;
 import android.util.AttributeSet;
 
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -15,10 +16,16 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
+import com.example.a50beees.ui.Activities.SandboxActivity;
+import com.example.a50beees.ui.Entities.Bee;
+import com.example.a50beees.ui.Entities.Entity;
+import com.example.a50beees.ui.Entities.Rabbit;
+import com.example.a50beees.ui.Entities.SpriteGroup;
+
 import java.util.ArrayList;
 
 public class SandboxView extends View {
-    static int timerUpdateInterval = 20;
+    static private final int timerUpdateInterval = 20;
     class Timer extends CountDownTimer {
         int tick = 0;
         public Timer() {
@@ -36,17 +43,17 @@ public class SandboxView extends View {
     }
 
     static Timer timer;
-    static double time_coefficient = 1;
-    double scaleFactor = 1.0;
-    double canvasX = 0, canvasY = 0;
-    double focalX = 0, focalY = 0;
-    double lastTouchX, lastTouchY;
+    static private double time_coefficient = 1;
+    private double scaleFactor = 1.0;
+    private double canvasX = 0, canvasY = 0;
+    private double focalX = 0, focalY = 0;
+    private double lastTouchX, lastTouchY;
 
-    Paint paint = new Paint();
+    private final Paint paint = new Paint();
 
-    static SpriteGroup<Entity> entities = new SpriteGroup<>();
+    private final static SpriteGroup<Entity> entities = new SpriteGroup<>();
     // list of platforms/blocks that interact with entities
-    static ArrayList<Rect> effectors = new ArrayList<>();
+    private final static ArrayList<Rect> effectors = new ArrayList<>();
 
     public SandboxView(Context context) {
         super(context);
@@ -138,10 +145,16 @@ public class SandboxView extends View {
             double canvasEventY = ((event.getY()) / scaleFactor - canvasY);
 
             // they are drawn on canvas therefore use canvas coords in the list
-            for (int i = 0; i < 5; i++) {
-                entities.add(new Bee(new Rect((int) canvasEventX, (int) canvasEventY,
-                        (int) canvasEventX + 50, (int) canvasEventY + 50)));
+            String spawn_entity_type = ((SandboxActivity) getContext()).getSpawn_entity_type();
+
+            int number_of_entities = 5;
+
+            switch (spawn_entity_type) {
+                case "bee": for (int i = 0; i <= number_of_entities; i++) entities.add(new Bee(new Rect((int) canvasEventX, (int) canvasEventY, 0, 0))); break;
+                case "rabbit": for (int i = 0; i <= number_of_entities; i++) entities.add(new Rabbit(new Rect((int) canvasEventX, (int) canvasEventY, 0, 0))); break;
+                default:  Log.i("SandboxView onSingleTapConfirmed", String.format("Spawn entity not found: %s", spawn_entity_type));
             }
+
             return true;
         }
 
@@ -150,16 +163,8 @@ public class SandboxView extends View {
 
         @Override
         public boolean onDoubleTap(@NonNull MotionEvent event) {
-            // onSingleTapConfirmed(event);
-            // return onSingleTapConfirmed(event);
-            double canvasEventX = ((event.getX()) / scaleFactor - canvasX);
-            double canvasEventY = ((event.getY()) / scaleFactor - canvasY);
-
-            // they are drawn on canvas therefore use canvas coords in the list
-            for (int i = 0; i < 5; i++) {
-                entities.add(new Rabbit(new Rect((int) canvasEventX, (int) canvasEventY,
-                        (int) canvasEventX + 50, (int) canvasEventY + 50)));
-            }
+            onSingleTapConfirmed(event);
+            onSingleTapConfirmed(event);
             return true;
 
         }
@@ -212,5 +217,25 @@ public class SandboxView extends View {
     @Override
     public boolean performClick() {
         return super.performClick();
+    }
+
+    public void setTime_coefficient(float v) {
+        time_coefficient = v;
+    }
+
+    public static double getTime_coefficient() {
+        return time_coefficient;
+    }
+
+    public static int getTimerUpdateInterval() {
+        return timerUpdateInterval;
+    }
+
+    public static ArrayList<Rect> getEffectors() {
+        return effectors;
+    }
+
+    public static SpriteGroup<Entity> getEntities() {
+        return entities;
     }
 }

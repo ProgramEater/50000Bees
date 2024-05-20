@@ -1,4 +1,4 @@
-package com.example.a50beees.ui;
+package com.example.a50beees.ui.Entities;
 
 import android.graphics.Canvas;
 
@@ -13,7 +13,7 @@ public class SpriteGroup<T extends Sprite> implements Iterable<T> {
     protected HashSet<T> spriteGroup;
     protected ArrayList<T> forRemoval;
 
-    SpriteGroup() {
+    public SpriteGroup() {
         spriteGroup = new HashSet<>();
         forRemoval = new ArrayList<>();
     }

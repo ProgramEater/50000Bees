@@ -1,4 +1,4 @@
-package com.example.a50beees.ui;
+package com.example.a50beees.ui.Entities;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -10,19 +10,11 @@ import android.util.Pair;
 
 import androidx.annotation.CallSuper;
 
+import com.example.a50beees.ui.SandboxView;
+
 import java.util.ArrayList;
 
-/**
- * Every Entity must have
- *     || health (health points)
- *     || attack_power
- *     || defence
- *     || attacking_range
- *     || sight_distance
- *     || field_of_view (in radians)
- *     || MAX_SPEED
- *     || ACCELERATION
- *     || ANGLE_ACCELERATION**/
+
 public abstract class Entity extends Sprite {
     protected String type;
 
@@ -70,6 +62,17 @@ public abstract class Entity extends Sprite {
     Entity target;
     SimpleTarget last_seen_target;
 
+    /**
+     * Every Entity must have
+     * @param health health points
+     * @param attack_power damage points
+     * @param defence amount of points which is subtracted from taken damage
+     * @param attacking_range useless probably
+     * @param sight_distance distance on which entity can see
+     * @param field_of_view angle of view available (in radians)
+     * @param MAX_SPEED
+     * @param ACCELERATION
+     * @param ANGLE_ACCELERATION**/
     public Entity(Bitmap frames_image, int frame_count_columns, int frame_count_rows, int frame_count, Rect rect, String type, int aggression, int attack_power, int defence, int health, int attacking_range, int sight_distance, double field_of_view, double MAX_SPEED, double ACCELERATION, double ANGLE_ACCELERATION, int rotationRadius) {
         super(frames_image, frame_count_columns, frame_count_rows, frame_count, rect);
         this.type = type;
@@ -179,7 +182,7 @@ public abstract class Entity extends Sprite {
         }
 
         // angle speed is basically a delta angle in a time duration
-        direction_angle += angle_speed * SandboxView.time_coefficient;
+        direction_angle += angle_speed * SandboxView.getTime_coefficient();
 
 
         // GET TO DESIRED SPEED
@@ -193,7 +196,7 @@ public abstract class Entity extends Sprite {
 
     public void pick_a_target() {
         // TODO implement preference/fear lists
-        for (Entity entity : SandboxView.entities) {
+        for (Entity entity : SandboxView.getEntities()) {
             if (this == entity) continue;
             if (!entity.isValid()) continue;
             if ((aggression <= 90) && (this.type.equals(entity.type))) continue;
@@ -216,18 +219,18 @@ public abstract class Entity extends Sprite {
     }
 
     public boolean attack_target() {
-        if (this.sees_entity(target)) {target.get_hit(attack_power); return true;}
+        if (this.sees_entity(target)) {target.get_hit(attack_power, this); return true;}
         return false;
     }
 
-    public void get_hit(int damage) {
+    public void get_hit(int damage, Entity attacker) {
         Log.i("GET_HIT", String.valueOf(health));
-        health -= damage;
+        health -= Math.max(damage + defence, 1);
         if (health <= 0) die();
     }
 
     public void die() {
-        SandboxView.entities.remove(this);
+        SandboxView.getEntities().remove(this);
         valid = false;
     }
 
@@ -253,10 +256,10 @@ public abstract class Entity extends Sprite {
 
     public void move_and_handle_collisions() {
         // x
-        rect.offset((int) (current_speed * SandboxView.time_coefficient * Math.cos(direction_angle)), 0);
+        rect.offset((int) (current_speed * SandboxView.getTime_coefficient() * Math.cos(direction_angle)), 0);
 
         // effectors
-        for (Rect effector_rect : SandboxView.effectors) {
+        for (Rect effector_rect : SandboxView.getEffectors()) {
             if (this.collidesRect(effector_rect)) {
 
                 // move out of the collision
@@ -270,10 +273,10 @@ public abstract class Entity extends Sprite {
         }
 
         // y
-        rect.offset(0, (int) (-current_speed * SandboxView.time_coefficient * Math.sin(direction_angle)));
+        rect.offset(0, (int) (-current_speed * SandboxView.getTime_coefficient() * Math.sin(direction_angle)));
 
         // effectors
-        for (Rect effector_rect : SandboxView.effectors) {
+        for (Rect effector_rect : SandboxView.getEffectors()) {
             if (this.collidesRect(effector_rect)) {
 
                 // move out of the collision
@@ -328,8 +331,8 @@ public abstract class Entity extends Sprite {
         }
 
         public Pair<Integer, Integer> get_possible_location() {
-            return new Pair<>((int) (x + Math.cos(direction_angle) * speed * (SandboxView.get_time() - last_time) / SandboxView.timerUpdateInterval),
-                    (int) (y - Math.sin(direction_angle) * speed * (SandboxView.get_time() - last_time) / SandboxView.timerUpdateInterval));
+            return new Pair<>((int) (x + Math.cos(direction_angle) * speed * (SandboxView.get_time() - last_time) / SandboxView.getTimerUpdateInterval()),
+                    (int) (y - Math.sin(direction_angle) * speed * (SandboxView.get_time() - last_time) / SandboxView.getTimerUpdateInterval()));
         }
     }
 

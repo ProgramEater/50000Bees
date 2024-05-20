@@ -1,11 +1,13 @@
-package com.example.a50beees.ui;
+package com.example.a50beees.ui.Entities;
 
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 
 import android.util.Pair;
 
-public class Insect extends Entity {
+import com.example.a50beees.ui.SandboxView;
+
+public abstract class Insect extends Entity {
     Pair<Integer, Integer> home_point;
 
     public Insect(Bitmap frames_image, int frame_count_columns, int frame_count_rows, int frame_count, Rect rect, int aggression, int attack_power, int defence, int health, int attacking_range, int sight_distance, double field_of_view, double MAX_SPEED, double ACCELERATION, double ANGLE_ACCELERATION, int rotationRadius) {
@@ -28,7 +30,7 @@ public class Insect extends Entity {
                 } else {
                     desired_angle_speed += (0.5 - Math.random()) * ANGLE_ACCELERATION;
 
-                    desired_angle += desired_angle_speed * SandboxView.time_coefficient;
+                    desired_angle += desired_angle_speed * SandboxView.getTime_coefficient();
                 }
 
                 break;

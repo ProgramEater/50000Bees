@@ -1,13 +1,16 @@
-package com.example.a50beees.ui;
+package com.example.a50beees.ui.Entities;
 
 import android.graphics.Rect;
+
+import com.example.a50beees.ui.Activities.SandboxActivity;
+import com.example.a50beees.ui.SandboxView;
 
 public class Rabbit extends Entity{
     final int JUMP_COOLDOWN = 30, JUMP_DURATION = 10;
     int last_jump = -31;
 
     public Rabbit(Rect rect) {
-        super(SandboxActivity.bitmaps.get("rabbit"), 2, 2, 4,
+        super(SandboxActivity.getBitmaps().get("rabbit"), 2, 2, 4,
                 new Rect(rect.left, rect.top, rect.left + 100, rect.top + 100), "Rabbit",
                 50,
                 30,

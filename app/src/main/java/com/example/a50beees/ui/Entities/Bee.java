@@ -1,11 +1,13 @@
-package com.example.a50beees.ui;
+package com.example.a50beees.ui.Entities;
 
 import android.graphics.Rect;
 import android.util.Pair;
 
+import com.example.a50beees.ui.Activities.SandboxActivity;
+
 public class Bee extends Insect {
     public Bee(Rect rect) {
-        super(SandboxActivity.bitmaps.get("bee"), 2, 2, 4,
+        super(SandboxActivity.getBitmaps().get("bee"), 2, 2, 4,
                 new Rect(rect.left, rect.top, rect.left + 50, rect.top + 50),
                 60,
                 100,

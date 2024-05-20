@@ -1,4 +1,4 @@
-package com.example.a50beees.ui;
+package com.example.a50beees.ui.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
