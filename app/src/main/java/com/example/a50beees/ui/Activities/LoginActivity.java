@@ -45,7 +45,7 @@ public class LoginActivity extends AppCompatActivity {
             if (checkAuth()) {
                 isUserExistUseCase.execute(login, status -> {
                     if (status.getValue() == null || status.getErrors() != null) {
-                        Toast.makeText(this, "Something went wrong. Try later =(", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Something wrong with the server. Try later =(", Toast.LENGTH_SHORT).show();
                         Log.i("11", status.getErrors() == null ? String.valueOf(status.getStatusCode()) : status.getErrors().toString());
                         return;
                     }
@@ -80,6 +80,7 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(i);
             } else {
                 Toast.makeText(this, "login or password data is wrong", Toast.LENGTH_SHORT).show();
+                Log.i("111", logStatus.toString());
             }
         });
     }

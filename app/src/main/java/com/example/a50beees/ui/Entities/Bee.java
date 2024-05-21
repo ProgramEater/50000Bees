@@ -7,8 +7,8 @@ import com.example.a50beees.ui.Activities.SandboxActivity;
 
 public class Bee extends Insect {
     public Bee(Rect rect) {
-        super(SandboxActivity.getBitmaps().get("bee"), 2, 2, 4,
-                new Rect(rect.left, rect.top, rect.left + 50, rect.top + 50),
+        super(SandboxActivity.getBitmaps().get("bee"), 3, 3, 9,
+                new Rect(rect.left, rect.top, rect.left + 50, rect.top + 90),
                 60,
                 100,
                 0,

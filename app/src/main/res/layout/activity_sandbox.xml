@@ -13,16 +13,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:background="@drawable/sandbox_grass_image"/>
+        android:background="@drawable/hedgehod_god"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/sandbox_recycler_view"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:orientation="horizontal"
-        android:layout_width="600dp"
-        android:layout_height="60dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginHorizontal="10dp"
         android:layout_marginVertical="10dp"
+        android:padding="10dp"
+        android:background="@drawable/recycler_border_with_background"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
@@ -43,7 +45,11 @@
 
             android:valueFrom="0.01"
             android:valueTo="2.0"
-            android:value="1.0" />
+            android:value="1.0"
+            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
+            app:trackColor="@color/black"
+            app:haloColor="@color/primary"
+            app:thumbColor="@color/primary"/>
 
     </FrameLayout>
 

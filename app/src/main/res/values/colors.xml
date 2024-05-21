@@ -6,8 +6,13 @@
     <color name="blue">#3479E1</color>
     <color name="orange">#EA7A2A</color>
     <color name="grey">#5B5B5B</color>
+    <color name="grey2">#ABABAB</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
+    <color name="primary">#E7E400</color>
+    <color name="secondary">#E7AC00</color>
+    <color name="blackAlpha">#90000000</color>
+    <color name="whiteAlpha">#90FFFFFF</color>
 </resources>

@@ -3,7 +3,6 @@ package com.example.a50beees.ui.Activities;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
@@ -43,13 +42,8 @@ public class SandboxActivity extends AppCompatActivity implements RecyclerViewCl
         RecyclerView sandbox_recyclerview = findViewById(R.id.sandbox_recycler_view);
         sandbox_recyclerview.setAdapter(new SandboxRecyclerAdapter(recycler_view_bitmaps, this));
 
-        slider = (Slider) findViewById(R.id.time_slider);
-        slider.addOnChangeListener(new Slider.OnChangeListener() {
-            @Override
-            public void onValueChange(@NonNull Slider slider, float v, boolean b) {
-                sandbox_view.setTime_coefficient(v);
-            }
-        });
+        slider = findViewById(R.id.time_slider);
+        slider.addOnChangeListener((slider, v, b) -> sandbox_view.setTime_coefficient(v));
 
         sandbox_view = findViewById(R.id.sandbox_view);
     }
@@ -60,9 +54,10 @@ public class SandboxActivity extends AppCompatActivity implements RecyclerViewCl
     }
 
     protected void fill_bitmaps() {
-        bitmaps.put("bee", BitmapFactory.decodeResource(getResources(), R.drawable.bee1_2_2_4));
+        bitmaps.put("bee", BitmapFactory.decodeResource(getResources(), R.drawable.bee_3_3_9));
         bitmaps.put("rabbit", BitmapFactory.decodeResource(getResources(), R.drawable.rabbit_2_2_4));
         bitmaps.put("arrow", BitmapFactory.decodeResource(getResources(), R.drawable.arrow));
+        bitmaps.put("grass", BitmapFactory.decodeResource(getResources(), R.drawable.sandbox_grass_background_image1));
     }
 
     public static TreeMap<String, Bitmap> getBitmaps() {

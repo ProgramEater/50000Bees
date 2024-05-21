@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="buttonMainscreen" parent="Theme.AppCompat">
+        <item name="android:gravity"> center </item>
+        <item name="android:background">@drawable/sandbox_bee_slots_image_repeat</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">7pt</item>
+    </style>
+    <style name="editTexts" parent="Theme.AppCompat.Light">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:background">@drawable/round_whiltealpha_field</item>
+        <item name="android:textColorHighlight">@color/white</item>
+        <item name="android:textColorHint">@color/white</item>
+    </style>
+</resources>

@@ -2,10 +2,10 @@
     <string name="app_name">50 Thousand Bees</string>
     <string name="sandbox_button">sandbox</string>
     <string name="exit_button">exit</string>
-    <string name="login">login</string>
-    <string name="password">password</string>
+    <string name="login">LOGIN</string>
+    <string name="password">PASSWORD</string>
     <string name="sign_in">sign in</string>
-    <string name="reg">У вас еще нет аккаунта? Зарегистрируйтесь сейчас!</string>
-    <string name="registration">РЕГИСТРАЦИЯ</string>
-    <string name="repeat_the_password">Введите пароль еще раз</string>
+    <string name="reg">У вас еще нет аккаунта?\n Зарегистрируйтесь сейчас!</string>
+    <string name="registration">REGISTRATION</string>
+    <string name="repeat_the_password">REPEAT PASSWORD</string>
 </resources>

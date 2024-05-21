@@ -49,6 +49,9 @@ public class SandboxView extends View {
     private double focalX = 0, focalY = 0;
     private double lastTouchX, lastTouchY;
 
+    private int borderW, borderH;
+    private SandboxBackground backgroundController;
+
     private final Paint paint = new Paint();
 
     private final static SpriteGroup<Entity> entities = new SpriteGroup<>();
@@ -82,14 +85,16 @@ public class SandboxView extends View {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
 
-        int sH = this.getHeight(), sW = this.getWidth();
-        int x1 = -sW, y1 = -sH;
-        int newW = 2 * sW, newH = 4 * sH;
-        int pW = 100;
-        effectors.add(new Rect(x1 - pW, y1 - pW, x1 + newW + pW, y1));
-        effectors.add(new Rect(x1 - pW, y1 - pW, x1, y1 + newH + pW));
-        effectors.add(new Rect(x1 + newW, y1 - pW, x1 + newW + pW, y1 + newH + pW));
-        effectors.add(new Rect(x1 - pW, y1 + newH, x1 + newW + pW, y1 + newH + pW));
+        borderW = 1500 * 4;
+        borderH = 1500 * 4;
+
+        backgroundController = new SandboxBackground(borderW, borderH);
+
+        int pW = 1000;
+        effectors.add(new Rect(-pW, -pW, borderW + pW, 0));
+        effectors.add(new Rect(-pW, 0, 0, borderH + pW));
+        effectors.add(new Rect(borderW, 0, borderW + pW, borderH + pW));
+        effectors.add(new Rect(0, borderH, borderW + pW, borderH + pW));
 
     }
 
@@ -108,6 +113,9 @@ public class SandboxView extends View {
         canvas.translate((float) (canvasX), (float) (canvasY));
 
         super.onDraw(canvas);
+
+        backgroundController.draw(canvas, paint);
+
         entities.drawAll(canvas);
 
         for (Rect r : effectors) {
@@ -122,6 +130,7 @@ public class SandboxView extends View {
         mScaleDetector.onTouchEvent(event);
 
         if (mScaleDetector.isInProgress()) return false;
+        if (event.getPointerCount() >= 2) return false;
 
         return mGestureDetector.onTouchEvent(event);
     }
@@ -172,11 +181,20 @@ public class SandboxView extends View {
         @Override
         public boolean onScroll(MotionEvent e1, @NonNull MotionEvent e2,
                                 float distanceX, float distanceY) {
+            if (mScaleDetector.isInProgress()) {
+                lastTouchX = e2.getX();
+                lastTouchY = e2.getY();
+                return false;
+            }
+
             canvasX += (-lastTouchX + e2.getX()) / scaleFactor * .6;
             canvasY += (-lastTouchY + e2.getY()) / scaleFactor * .6;
 
             lastTouchX = e2.getX();
             lastTouchY = e2.getY();
+
+            canvasX = Math.min(Math.max(-borderW, canvasX), getWidth() / scaleFactor);
+            canvasY = Math.min(Math.max(-borderH, canvasY), getHeight() / scaleFactor);
 
             invalidate();
             return true;
@@ -207,7 +225,7 @@ public class SandboxView extends View {
             canvasY += focalY * (1 - detector.getScaleFactor());
 
             scaleFactor *= detector.getScaleFactor();
-            scaleFactor = Math.max(0.01f, Math.min(50.0f, scaleFactor));
+            scaleFactor = Math.max(0.1f, Math.min(30.f, scaleFactor));
 
             invalidate();
             return true;

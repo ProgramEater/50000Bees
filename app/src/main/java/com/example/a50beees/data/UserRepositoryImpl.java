@@ -91,7 +91,8 @@ public class UserRepositoryImpl implements UserRepository, SignUserRepository {
     @Override
     public void login(@NonNull String login, @NonNull String password, Consumer<Status<Void>> callback) {
         credentialsDataSource.updateLogin(login, password);
-        userApi.login().enqueue(new CallToConsumer<>(
+        userApi = RetrofitFactory.getInstance().getUserApi();
+        userApi.login(CredentialsDataSource.getInstance().getAuthData()).enqueue(new CallToConsumer<>(
                 callback,
                 dto -> null
         ));

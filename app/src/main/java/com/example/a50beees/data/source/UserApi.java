@@ -8,6 +8,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
@@ -21,5 +22,5 @@ public interface UserApi {
     @POST("/user/register")
     Call<Void> register(@Body AccountDto dto);
     @GET("/user/login")
-    Call<Void> login();
+    Call<Void> login(@Header("Authorization") String authHeader);
 }

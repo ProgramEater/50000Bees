@@ -34,8 +34,7 @@
         </activity>
         <activity
             android:name=".ui.Activities.LoginActivity"
-            android:exported="true"
-            android:screenOrientation="landscape">
+            android:exported="true">
             <intent-filter>
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
