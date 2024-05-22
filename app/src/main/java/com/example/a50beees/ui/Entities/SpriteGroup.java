@@ -26,6 +26,8 @@ public class SpriteGroup<T extends Sprite> implements Iterable<T> {
         forRemoval.add(obj);
     }
 
+    public int size() {return spriteGroup.size();}
+
     public void updateAll() {
         for (T obj : spriteGroup) {
             obj.update();

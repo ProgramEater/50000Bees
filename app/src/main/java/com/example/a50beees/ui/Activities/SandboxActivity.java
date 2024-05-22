@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,6 +22,7 @@ import java.util.TreeMap;
 
 public class SandboxActivity extends AppCompatActivity implements RecyclerViewClickListener {
     SandboxView sandbox_view;
+    TextView count_tv;
     Slider slider;
     private String spawn_entity_type = "bee";
 
@@ -44,6 +46,8 @@ public class SandboxActivity extends AppCompatActivity implements RecyclerViewCl
         slider = findViewById(R.id.time_slider);
         slider.addOnChangeListener((slider, v, b) -> sandbox_view.setTime_coefficient(v));
 
+        count_tv = findViewById(R.id.count_textview);
+
         sandbox_view = findViewById(R.id.sandbox_view);
     }
 
@@ -66,6 +70,8 @@ public class SandboxActivity extends AppCompatActivity implements RecyclerViewCl
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         super.onTouchEvent(event);
+
+        count_tv.setText(String.valueOf(sandbox_view.getEntityCount()));
 
         return super.onTouchEvent(event);
     }

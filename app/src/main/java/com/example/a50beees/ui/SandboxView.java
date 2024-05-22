@@ -256,4 +256,5 @@ public class SandboxView extends View {
     public static SpriteGroup<Entity> getEntities() {
         return entities;
     }
+    public int getEntityCount() {return entities.size();}
 }

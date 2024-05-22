@@ -28,6 +28,18 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
+    <TextView
+        android:id="@+id/count_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/round_whiltealpha_field"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:padding="3dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="50dp"/>
+
+
     <FrameLayout
         android:id="@+id/frame"
         android:orientation="vertical"

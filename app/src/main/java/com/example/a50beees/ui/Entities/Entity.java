@@ -224,7 +224,6 @@ public abstract class Entity extends Sprite {
     }
 
     public void get_hit(int damage, Entity attacker) {
-        Log.i("GET_HIT", String.valueOf(health));
         health -= Math.max(damage + defence, 1);
         if (health <= 0) die();
     }
