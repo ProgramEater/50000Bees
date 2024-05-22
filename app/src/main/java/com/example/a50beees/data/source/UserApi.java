@@ -16,11 +16,13 @@ public interface UserApi {
     @GET("/user")
     Call<List<UserDto>> getAll();
     @GET("/user/{id}")
-    Call<UserDto> getById(@Path("id") String id);
+    Call<UserDto> getById(@Path("id") String id, @Header("Authorization") String authHeader);
     @GET("/user/username/{username}")
     Call<Void> isExist(@Path("username") String login);
     @POST("/user/register")
     Call<Void> register(@Body AccountDto dto);
+    @GET("/user/username/{username}")
+    Call<UserDto> getByUsername(@Path("username") String username, @Header("Authorization") String authHeader);
     @GET("/user/login")
     Call<Void> login(@Header("Authorization") String authHeader);
 }

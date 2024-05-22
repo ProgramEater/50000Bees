@@ -52,9 +52,10 @@ public class UserRepositoryImpl implements UserRepository, SignUserRepository {
 
     @Override
     public void getUser(@NonNull String id, @NonNull Consumer<Status<FullUserEntity>> callback) {
-        userApi.getById(id).enqueue(new CallToConsumer<>(
+        userApi.getById(id, CredentialsDataSource.getInstance().getAuthData()).enqueue(new CallToConsumer<>(
                 callback,
                 user -> {
+                    if (user == null) return null;
                     final String resultId = user.id;
                     final String name = user.username;
                     if (resultId != null && name != null) {
@@ -70,6 +71,28 @@ public class UserRepositoryImpl implements UserRepository, SignUserRepository {
                 }
         ));
 
+    }
+
+    @Override
+    public void getUserByUsername(@NonNull String username, @NonNull Consumer<Status<FullUserEntity>> callback) {
+        userApi.getByUsername(username, CredentialsDataSource.getInstance().getAuthData()).enqueue(new CallToConsumer<>(
+                callback,
+                user -> {
+                    if (user == null) return null;
+                    final String resultId = user.id;
+                    final String name = user.username;
+                    if (resultId != null && name != null) {
+                        return new FullUserEntity(
+                                resultId,
+                                user.username,
+                                user.photoUrl,
+                                user.email
+                        );
+                    } else {
+                        return null;
+                    }
+                }
+        ));
     }
 
     @Override

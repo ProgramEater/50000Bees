@@ -16,9 +16,9 @@ public class RetrofitFactory {
         }
         return INSTANCE;
     }
-
+    // http://10.0.2.2:8080
     private final Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:8080")
+            .baseUrl("http://192.168.31.161:8080")
             .addConverterFactory(GsonConverterFactory.create())
             .build();
 

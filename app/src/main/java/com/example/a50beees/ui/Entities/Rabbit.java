@@ -10,7 +10,7 @@ public class Rabbit extends Entity{
     int last_jump = -31;
 
     public Rabbit(Rect rect) {
-        super(SandboxActivity.getBitmaps().get("rabbit"), 2, 2, 4,
+        super(SandboxActivity.getBitmaps().get("rabbit"), 3, 3, 9,
                 new Rect(rect.left, rect.top, rect.left + 100, rect.top + 100), "Rabbit",
                 50,
                 30,
@@ -47,7 +47,6 @@ public class Rabbit extends Entity{
                     desired_angle += desired_angle_speed;
                 }
             }
-            //TODO MAKE OTHER STATES
         }
     }
 }

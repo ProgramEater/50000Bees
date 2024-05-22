@@ -15,4 +15,5 @@
     <color name="secondary">#E7AC00</color>
     <color name="blackAlpha">#90000000</color>
     <color name="whiteAlpha">#90FFFFFF</color>
+    <color name="red">#FF0000</color>
 </resources>

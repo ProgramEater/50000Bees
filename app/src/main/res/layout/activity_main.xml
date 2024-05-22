@@ -50,7 +50,8 @@
         android:orientation="vertical"
         android:gravity="center"
         android:showDividers="middle"
-        android:divider="@drawable/main_menu_button_gap">
+        android:divider="@drawable/main_menu_button_gap"
+        android:background="@android:color/transparent">
         <Button
             style="@style/buttonMainscreen"
             android:id="@+id/sandbox_button"

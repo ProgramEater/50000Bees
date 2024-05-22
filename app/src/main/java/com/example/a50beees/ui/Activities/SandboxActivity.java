@@ -7,7 +7,6 @@ import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -49,13 +48,13 @@ public class SandboxActivity extends AppCompatActivity implements RecyclerViewCl
     }
 
     private void fill_recycler_view_bitmaps() {
-        recycler_view_bitmaps.add(new Pair<>("bee", bitmaps.get("bee")));
-        recycler_view_bitmaps.add(new Pair<>("rabbit", bitmaps.get("rabbit")));
+        recycler_view_bitmaps.add(new Pair<>("bee", BitmapFactory.decodeResource(getResources(), R.drawable.ic_bee)));
+        recycler_view_bitmaps.add(new Pair<>("rabbit", BitmapFactory.decodeResource(getResources(), R.drawable.ic_rabbit)));
     }
 
     protected void fill_bitmaps() {
         bitmaps.put("bee", BitmapFactory.decodeResource(getResources(), R.drawable.bee_3_3_9));
-        bitmaps.put("rabbit", BitmapFactory.decodeResource(getResources(), R.drawable.rabbit_2_2_4));
+        bitmaps.put("rabbit", BitmapFactory.decodeResource(getResources(), R.drawable.rabbit_3_3_9));
         bitmaps.put("arrow", BitmapFactory.decodeResource(getResources(), R.drawable.arrow));
         bitmaps.put("grass", BitmapFactory.decodeResource(getResources(), R.drawable.sandbox_grass_background_image1));
     }

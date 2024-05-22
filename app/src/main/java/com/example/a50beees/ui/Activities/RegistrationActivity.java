@@ -2,6 +2,7 @@ package com.example.a50beees.ui.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -12,11 +13,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.a50beees.R;
 import com.example.a50beees.data.UserRepositoryImpl;
 import com.example.a50beees.domain.sign.CreateUserUseCase;
+import com.example.a50beees.domain.sign.IsUserExistUseCase;
 
 
 public class RegistrationActivity extends AppCompatActivity {
     EditText login_edit, password_edit, password_edit2;
     CreateUserUseCase createUserUseCase = new CreateUserUseCase(UserRepositoryImpl.getInstance());
+    IsUserExistUseCase isUserExistUseCase = new IsUserExistUseCase(UserRepositoryImpl.getInstance());
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -35,14 +38,26 @@ public class RegistrationActivity extends AppCompatActivity {
             final String password = password_edit.getText().toString();
 
             if (checkAuth()) {
-                createUserUseCase.execute(login, password, createStatus -> {
-                    if (createStatus.getStatusCode() == 201 && createStatus.getErrors() == null) {
-                        Intent i = new Intent(this, LoginActivity.class);
-                        i.putExtra("login", login_edit.getText().toString());
-                        i.putExtra("password", password_edit.getText().toString());
-                        startActivity(i);
+                isUserExistUseCase.execute(login, status -> {
+                    if (status.getValue() == null || status.getErrors() != null) {
+                        Toast.makeText(this, "Something wrong with the server. Try later =(", Toast.LENGTH_SHORT).show();
+                        Log.i("11", status.getErrors() == null ? String.valueOf(status.getStatusCode()) : status.getErrors().toString());
+                        return;
+                    }
+                    // exists
+                    if (status.getValue()) {
+                        Toast.makeText(this, "User with that username already exists", Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(this, "Something went wrong in registration", Toast.LENGTH_SHORT).show();
+                        createUserUseCase.execute(login, password, createStatus -> {
+                            if (createStatus.getStatusCode() == 201 && createStatus.getErrors() == null) {
+                                Intent i = new Intent(this, LoginActivity.class);
+                                i.putExtra("login", login_edit.getText().toString());
+                                i.putExtra("password", password_edit.getText().toString());
+                                startActivity(i);
+                            } else {
+                                Toast.makeText(this, "Failed to register new user", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
                 });
             }
